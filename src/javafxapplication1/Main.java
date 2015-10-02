@@ -23,8 +23,10 @@ import javafx.scene.text.*;
 
 public class Main extends Application {
     public static TextField outputNameTextField;
+    public static TextField framerateTextField;
     public static Text processOrFinish;
     public static String filePath;
+    public static int frameRate;
     
     public static void main(String[] args) {
         Application.launch(args);
@@ -32,10 +34,19 @@ public class Main extends Application {
     
     public static void runExec(String filePath){
         try {
+            frameRate = Integer.parseInt(framerateTextField.getText());
             processOrFinish.setText("Processing");
 
             StringBuilder sb = new StringBuilder();
+            
+            sb.append("avconv -framerate ");
+            sb.append(Integer.toString(frameRate));
+            sb.append(" -b 65536k -i ");
+            
+            /*
+            // old style
             sb.append("avconv -framerate 25 -b 65536k -i ");
+            */
             
             // to add the sequencial images format 
             // THIS IS IMPORTANT IF TO SET THE FORMAT CORRECTLY
@@ -44,6 +55,7 @@ public class Main extends Application {
             // to add the output
             sb.append(filePath + outputNameTextField.getText());
             
+            System.out.println(sb.toString());
             Process process = Runtime.getRuntime().exec(sb.toString());
             process.waitFor();
             // set processing text back
@@ -68,7 +80,7 @@ public class Main extends Application {
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
 
-        Scene scene = new Scene(grid, 551, 400);
+        Scene scene = new Scene(grid, 400, 250);
         Group root = new Group();
               
         Text scenetitle = new Text("Drag & Drop here");
@@ -79,11 +91,15 @@ public class Main extends Application {
         outputNameTextField.setPromptText("Output File Name *.mov");
         grid.add(outputNameTextField, 1, 1);
         
+        framerateTextField = new TextField();
+        framerateTextField.setText("25");
+        grid.add(framerateTextField, 1, 2);
+        
         Button genBtn = new Button("Generate");
         HBox hbBtn = new HBox(10);
         hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
         hbBtn.getChildren().add(genBtn);
-        grid.add(hbBtn, 1, 4);
+        grid.add(hbBtn, 1, 3);
 
         processOrFinish = new Text("");
         processOrFinish.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
